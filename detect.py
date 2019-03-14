@@ -1,9 +1,11 @@
+import os
 import sys
 import time
 from PIL import Image, ImageDraw
 from models.tiny_yolo import TinyYoloNet
 from utils import *
 from darknet import Darknet
+
 
 def detect(cfgfile, weightfile, imgfile):
     m = Darknet(cfgfile)
@@ -18,23 +20,39 @@ def detect(cfgfile, weightfile, imgfile):
         namesfile = 'data/coco.names'
     else:
         namesfile = 'data/names'
-    
+
     use_cuda = 1
     if use_cuda:
         m.cuda()
 
     img = Image.open(imgfile).convert('RGB')
     sized = img.resize((m.width, m.height))
-    
-    for i in range(2):
-        start = time.time()
-        boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
-        finish = time.time()
-        if i == 1:
-            print('%s: Predicted in %f seconds.' % (imgfile, (finish-start)))
+
+    # for i in range(2):
+    start = time.time()
+    boxes, output = do_detect(m, sized, 0.5, 0.4, use_cuda)
+    finish = time.time()
+    # if i == 1:
+    print('%s: Predicted in %f seconds.' % (imgfile, (finish - start)))
 
     class_names = load_class_names(namesfile)
     plot_boxes(img, boxes, 'predictions.jpg', class_names)
+    # print(output.shape)
+    save_image_output_fromImage(imgfile, output)
+
+
+def save_image_output_fromImage(imgfile, output):
+
+    img = np.array(Image.open(imgfile).convert('RGB')).transpose((2, 0, 1))
+    otp = output[0].cpu().numpy()
+    base_name = os.path.split(os.path.splitext(imgfile)[0])[-1]
+
+    np.save("./data/%s_input.npy" % base_name, img)
+    np.save("./data/%s_output.npy" % base_name, otp)
+
+    print("Info:Save input Ndarray in data%s_input.npy" % base_name)
+    print("Info:Save output Ndarray in data%s_output.npy" % base_name)
+
 
 def detect_cv2(cfgfile, weightfile, imgfile):
     import cv2
@@ -50,7 +68,7 @@ def detect_cv2(cfgfile, weightfile, imgfile):
         namesfile = 'data/coco.names'
     else:
         namesfile = 'data/names'
-    
+
     use_cuda = 1
     if use_cuda:
         m.cuda()
@@ -58,16 +76,18 @@ def detect_cv2(cfgfile, weightfile, imgfile):
     img = cv2.imread(imgfile)
     sized = cv2.resize(img, (m.width, m.height))
     sized = cv2.cvtColor(sized, cv2.COLOR_BGR2RGB)
-    
+
     for i in range(2):
         start = time.time()
         boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
         finish = time.time()
         if i == 1:
-            print('%s: Predicted in %f seconds.' % (imgfile, (finish-start)))
+            print('%s: Predicted in %f seconds.' % (imgfile, (finish - start)))
 
     class_names = load_class_names(namesfile)
-    plot_boxes_cv2(img, boxes, savename='predictions.jpg', class_names=class_names)
+    plot_boxes_cv2(img, boxes, savename='predictions.jpg',
+                   class_names=class_names)
+
 
 def detect_skimage(cfgfile, weightfile, imgfile):
     from skimage import io
@@ -84,25 +104,24 @@ def detect_skimage(cfgfile, weightfile, imgfile):
         namesfile = 'data/coco.names'
     else:
         namesfile = 'data/names'
-    
+
     use_cuda = 1
     if use_cuda:
         m.cuda()
 
     img = io.imread(imgfile)
     sized = resize(img, (m.width, m.height)) * 255
-    
+
     for i in range(2):
         start = time.time()
         boxes = do_detect(m, sized, 0.5, 0.4, use_cuda)
         finish = time.time()
         if i == 1:
-            print('%s: Predicted in %f seconds.' % (imgfile, (finish-start)))
+            print('%s: Predicted in %f seconds.' % (imgfile, (finish - start)))
 
     class_names = load_class_names(namesfile)
-    plot_boxes_cv2(img, boxes, savename='predictions.jpg', class_names=class_names)
-
-
+    plot_boxes_cv2(img, boxes, savename='predictions.jpg',
+                   class_names=class_names)
 
 
 if __name__ == '__main__':

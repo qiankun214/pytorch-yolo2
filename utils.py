@@ -371,6 +371,7 @@ def do_detect(model, img, conf_thresh, nms_thresh, use_cuda=1):
     t2 = time.time()
 
     output = model(img)
+    # print(output.shape)  # debug
     output = output.data
     # for j in range(100):
     #    sys.stdout.write('%f ' % (output.storage()[j]))
@@ -395,7 +396,7 @@ def do_detect(model, img, conf_thresh, nms_thresh, use_cuda=1):
         print('             nms : %f' % (t5 - t4))
         print('           total : %f' % (t5 - t0))
         print('-----------------------------------')
-    return boxes
+    return boxes, output
 
 
 def read_data_cfg(datacfg):

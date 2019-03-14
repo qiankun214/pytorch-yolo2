@@ -1,4 +1,4 @@
-Fork from [marvis/pytorch-yolo2](https://github.com/marvis/pytorch-yolo2) and fix some bug.Now this part can run directly on Windows with pytorch 1.0.0.This tiny-yolo-voc means Yolov2-tiny-voc,you can download the weights from [here](https://pjreddie.com/media/files/yolov2-tiny.weights)
+Fork from [marvis/pytorch-yolo2](https://github.com/marvis/pytorch-yolo2) and fix some bug.Now this part can run directly on Windows with pytorch 1.0.0.This tiny-yolo-voc means Yolov2-tiny-voc,you can download the weights [here](https://pjreddie.com/media/files/yolov2-tiny.weights)
 
 - [x] `python demo.py cfg/tiny-yolo-voc.cfg tiny-yolo-voc.weights`
 
