@@ -1,4 +1,11 @@
+Fork from [marvis/pytorch-yolo2](https://github.com/marvis/pytorch-yolo2) and fix some bug.Now this part can run directly on Windows with pytorch 1.0.0.This tiny-yolo-voc means Yolov2-tiny-voc,you can download the weights from [here](https://pjreddie.com/media/files/yolov2-tiny.weights)
+
+- [x] `python demo.py cfg/tiny-yolo-voc.cfg tiny-yolo-voc.weights`
+
+Next part of README copy from [marvis/pytorch-yolo2](https://github.com/marvis/pytorch-yolo2)
+
 ### pytorch-yolo2
+
 Convert https://pjreddie.com/darknet/yolo/ into pytorch. This repository is trying to achieve the following goals.
 - [x] implement RegionLoss, MaxPoolStride1, Reorg, GolbalAvgPool2d
 - [x] implement route layer
@@ -106,7 +113,6 @@ We get the results by using Focal Loss to replace CrossEntropyLoss in RegionLoss
  3          |VOC2007+2012  | VOC2007 |  73.73  |  75.20  | Focal Loss
  4          |VOC2007+2012  | VOC2007 |  73.53  |  74.95  | Focal Loss
 
-
 ---
 #### Problems
 ##### 1. Running variance difference between darknet and pytorch
@@ -114,7 +120,7 @@ Change the code in normalize_cpu to make the same result
 ```
 normalize_cpu:
 x[index] = (x[index] - mean[f])/(sqrt(variance[f] + .00001f));
-``` 
+```
 #### Training on your own data
 1. Padding your images into square size and produce the corresponding label files.
 2. Modify the resize strageties in listDataset. Currently the resize scales range from 320 ~ 608, and the resize intervals is 64, which should be equal to batch_size or several times of batch_size. 
