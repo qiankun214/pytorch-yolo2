@@ -6,4 +6,5 @@
 *.o
 *.so
 *.weights
+*.npy
 backup/
