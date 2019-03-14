@@ -39,6 +39,7 @@ def detect(cfgfile, weightfile, imgfile):
     plot_boxes(img, boxes, 'predictions.jpg', class_names)
     # print(output.shape)
     save_image_output_fromImage(imgfile, output)
+    save_model_parameter(m)
 
 
 def save_image_output_fromImage(imgfile, output):
@@ -52,6 +53,32 @@ def save_image_output_fromImage(imgfile, output):
 
     print("Info:Save input Ndarray in data%s_input.npy" % base_name)
     print("Info:Save output Ndarray in data%s_output.npy" % base_name)
+
+
+def save_model_parameter(m):
+    print("Info:Start save parameter to ./model_parameter")
+    for n, f in m.named_parameters():
+        name = "_".join(n.split(".")[2:])
+        # print(name)
+        np.save("model_parameter/%s.npy" % name, f.data.clone().cpu().numpy())
+        print("\tSave model_parameter/%s.npy" % name)
+
+    print("Info:export mean and var of BN layer")
+    for n, f in m.named_modules():
+        if "bn" not in n:
+            continue
+        name = n.split(".")[-1]
+        run_mean = f.running_mean.clone().cpu().numpy()
+        run_var = f.running_var.clone().cpu().numpy()
+        np.save("./model_parameter/%s_mean.npy" % name, run_mean)
+        np.save("./model_parameter/%s_var.npy" % name, run_var)
+        print("\tSave model_parameter/%s_mean.npy" % name)
+        print("\tSave model_parameter/%s_var.npy" % name)
+
+        # print(n, type(f.running_mean), f.running_var.shape)
+        # print(n)
+
+    print("Save model parameters successfully")
 
 
 def detect_cv2(cfgfile, weightfile, imgfile):
